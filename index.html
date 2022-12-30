@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <body>
   <button id="connectButton" onclick="javascript:connectWallet()">Connect Wallet</button>
-  <button id="clickButton" onclick="javascript:increaseCounter()" style="display:none">Counter +1</button>
+  <button id="postButton" onclick="javascript:postPubKey()" style="display:none">Counter +1</button>
   <br><br>
   <div id="status"></div>
   <div id="counter"></div>
 </body>
 <script>
   let counter = 0;
+  let walletaddress = null;
 
   async function connectWallet() {
     if (typeof window.ethereum == "undefined") {
@@ -16,22 +17,37 @@
     }
     try {
       connectedaccounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-      document.getElementById("status").innerHTML = connectedaccounts[0];
-      document.getElementById("clickButton").style.display = "inline";
+      walletaddress = connectedaccounts[0];
+      document.getElementById("status").innerHTML = "Connected with: " + walletaddress;
+      document.getElementById("postButton").style.display = "inline";
       document.getElementById("connectButton").style.display = "none";
-      updateCounter();
     } catch (error) {
       console.log(error);
     }
   }
 
-  function increaseCounter() {
-    counter++;
-    updateCounter();
-  }
-
-  function updateCounter() {
-    document.getElementById("counter").innerHTML = "Click Counter: " + counter;
+  // source: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#uploading_json_data
+  function postPubKey() {
+    const data = { pubkey: walletaddress };
+    fetch('http://localhost:8000/user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Success:', data);
+        let output = '<br>';
+        // source object.entries: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries
+        for (const [key, value] of Object.entries(data)) {
+          var counter = ('000'+value).slice(-3);
+          output += `${counter}: ${key}<br>`;
+        }
+        document.getElementById("counter").innerHTML = output;
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
   }
 </script>
 </html>
