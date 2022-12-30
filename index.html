@@ -9,6 +9,8 @@
 <script>
   let counter = 0;
   let walletaddress = null;
+  //let APISERVERROUTEURL = 'http://localhost:8000/user';
+  let APISERVERROUTEURL = 'https://danieldreke-silver-acorn-5vgjrj95gpx2p7ww-8000.preview.app.github.dev/';
 
   async function connectWallet() {
     if (typeof window.ethereum == "undefined") {
@@ -29,7 +31,7 @@
   // source: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#uploading_json_data
   function postPubKey() {
     const data = { pubkey: walletaddress };
-    fetch('http://localhost:8000/user', {
+    fetch(APISERVERROUTEURL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -40,6 +42,7 @@
         let output = '<br>';
         // source object.entries: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries
         for (const [key, value] of Object.entries(data)) {
+          // source leading zeros/slice: https://stackoverflow.com/a/20460414
           var counter = ('000'+value).slice(-3);
           output += `${counter}: ${key}<br>`;
         }
