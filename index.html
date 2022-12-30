@@ -1,21 +1,37 @@
 <!DOCTYPE html>
 <body>
-    <button onclick="javascript:connectWallet()">Connect Wallet</button>
-    <br><br>
-    <div id="status"></div>
+  <button id="connectButton" onclick="javascript:connectWallet()">Connect Wallet</button>
+  <button id="clickButton" onclick="javascript:increaseCounter()" style="display:none">Counter +1</button>
+  <br><br>
+  <div id="status"></div>
+  <div id="counter"></div>
 </body>
 <script>
-async function connectWallet() {
-  if (typeof window.ethereum == "undefined") {
-    document.getElementById("status").innerHTML = "Error: Could not find MetaMask.";
-    return;
+  let counter = 0;
+
+  async function connectWallet() {
+    if (typeof window.ethereum == "undefined") {
+      document.getElementById("status").innerHTML = "Error: Could not find MetaMask.";
+      return;
+    }
+    try {
+      connectedaccounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      document.getElementById("status").innerHTML = connectedaccounts[0];
+      document.getElementById("clickButton").style.display = "inline";
+      document.getElementById("connectButton").style.display = "none";
+      updateCounter();
+    } catch (error) {
+      console.log(error);
+    }
   }
-  try {
-    connectedaccounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-    document.getElementById("status").innerHTML = connectedaccounts[0];
-  } catch (error) {
-    console.log(error);
+
+  function increaseCounter() {
+    counter++;
+    updateCounter();
   }
-}
+
+  function updateCounter() {
+    document.getElementById("counter").innerHTML = "Click Counter: " + counter;
+  }
 </script>
 </html>
