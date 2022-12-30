@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<body>
+    <button onclick="javascript:connectWallet()">Connect Wallet</button>
+    <br><br>
+    <div id="status"></div>
+</body>
+<script>
+async function connectWallet() {
+  if (typeof window.ethereum == "undefined") {
+    document.getElementById("status").innerHTML = "Error: Could not find MetaMask.";
+    return;
+  }
+  try {
+    connectedaccounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+    document.getElementById("status").innerHTML = connectedaccounts[0];
+  } catch (error) {
+    console.log(error);
+  }
+}
+</script>
+</html>
